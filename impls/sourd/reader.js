@@ -1,5 +1,7 @@
-const { log } = require("console");
-const { MalSymbol, MalValue, MalList, MalVector, MalBool } = require("./types");
+const {
+  MalSymbol, MalValue, MalList,
+  MalVector, MalBool, MalMap, MalPrimitive, MalInt
+} = require("./types");
 
 class Reader {
   constructor(tokens) {
@@ -42,16 +44,24 @@ const read_vector = reader => {
   return new MalVector(ast);
 };
 
+const read_map = reader => {
+  const ast = read_seq(reader, '}');
+  return new MalMap(ast);
+};
+
 const read_atom = reader => {
   const token = reader.next();
   if (token.match(/^-?[0-9]+$/)) {
-    return new MalValue(parseInt(token));
+    return new MalInt(parseInt(token));
   }
   if (token == 'true') {
     return new MalBool(true);
   }
   if (token == 'false') {
     return new MalBool(false);
+  }
+  if (token.startsWith('\"') || token.startsWith(':')) {
+    return new MalPrimitive(token);
   }
   return new MalSymbol(token);
 };
@@ -65,6 +75,9 @@ const read_form = reader => {
     case '[':
       reader.next();
       return read_vector(reader);
+    case '{':
+      reader.next();
+      return read_map(reader);
     default:
       return read_atom(reader);
   }
