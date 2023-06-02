@@ -183,8 +183,23 @@ class MalInt extends MalPrimitive {
   }
 }
 
+class MalFunction extends MalValue {
+  binds;
+  env;
+  constructor(ast, binds, env) {
+    super(ast);
+    this.binds = binds;
+    this.env = env;
+  }
+
+  pr_str() {
+    return '#<function>';
+  }
+}
+
 module.exports = {
   MalSymbol, MalValue, MalList,
   MalVector, MalNil, MalBool, MalMap,
-  MalPrimitive, MalInt, MalIterable, MalString
+  MalPrimitive, MalInt, MalIterable, MalString,
+  MalFunction
 };
