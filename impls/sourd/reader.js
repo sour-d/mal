@@ -1,6 +1,6 @@
 const {
   MalSymbol, MalValue, MalList,
-  MalVector, MalBool, MalMap, MalPrimitive, MalInt
+  MalVector, MalBool, MalMap, MalPrimitive, MalInt, MalNil, MalString
 } = require("./types");
 
 class Reader {
@@ -60,7 +60,17 @@ const read_atom = reader => {
   if (token == 'false') {
     return new MalBool(false);
   }
-  if (token.startsWith('\"') || token.startsWith(':')) {
+  if (token == 'nil') {
+    return new MalNil();
+  }
+  if (token.startsWith('\"')) {
+    if (!token.endsWith("\"")) {
+      throw "unbalance \"\"";
+    }
+
+    return new MalString(token.slice(1, -1));
+  }
+  if (token.startsWith(':')) {
     return new MalPrimitive(token);
   }
   return new MalSymbol(token);
